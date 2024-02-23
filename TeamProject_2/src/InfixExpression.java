@@ -38,7 +38,7 @@ public class InfixExpression {
 		catch (FileNotFoundException e) {
 			System.out.println("Error: File not found.");
 		}
-		System.out.println(infix.toString());
+		System.out.println(infix.toString()); // Remove before submitting. Only for testing
 	}
 
 }
