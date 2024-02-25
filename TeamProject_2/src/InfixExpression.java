@@ -6,6 +6,7 @@ import java.util.Stack;
 public class InfixExpression {
 
 	private Stack<String> infix; // Stores infix expression as a stack of characters
+	private String postfix; // Stores infix expression as postfix after conversion
 
 	// Constructor that parses file and creates an infix expression as a stack of
 	// characters
@@ -21,8 +22,9 @@ public class InfixExpression {
 				if (Character.isDigit(ch)) { // If character is digit append it to builder
 					number.append(ch);
 				}
-				if (ch == '<' || ch == '>' || ch == '&' || ch == '|' || ch == '!' || ch == '=') { // Check if character is comparison
-																						// or logical operator
+				if (ch == '<' || ch == '>' || ch == '&' || ch == '|' || ch == '!' || ch == '=') { // Check if character
+																									// is comparison
+					// or logical operator
 					char nextChar = (char) reader.read();
 					if (nextChar == '=') {
 						operator.append(ch).append(nextChar);
@@ -63,45 +65,87 @@ public class InfixExpression {
 		} catch (FileNotFoundException e) {
 			System.out.println("Error: File not found.");
 		}
+		reverseInfixStack(infix);
 		System.out.println(infix.toString()); // Remove before submitting. Only for testing
+		this.postfix = infixToPostfix(infix);
+		System.out.println(this.postfix);  // Remove before submitting. For Testing.
 	}
 
 	/**
 	 * Return value for precedence of operator
+	 * 
 	 * @param operator: operator to be checked
 	 * @return: Value representing level of precedence
 	 */
 	public int precedence(String operator) {
 		if (operator.equals("^")) {
 			return 7;
-		}
-		else if (operator.equals("*") || operator.equals("/") || operator.equals("%")) {
+		} else if (operator.equals("*") || operator.equals("/") || operator.equals("%")) {
 			return 6;
-		}
-		else if (operator.equals("+") || operator.equals("-")) {
+		} else if (operator.equals("+") || operator.equals("-")) {
 			return 5;
-		}
-		else if (operator.equals(">") || operator.equals(">=") || operator.equals("<") || operator.equals("<=")) {
+		} else if (operator.equals(">") || operator.equals(">=") || operator.equals("<") || operator.equals("<=")) {
 			return 4;
-		}
-		else if (operator.equals("==") || operator.equals("!=")) {
+		} else if (operator.equals("==") || operator.equals("!=")) {
 			return 3;
-		}
-		else if (operator.equals("&&")) {
+		} else if (operator.equals("&&")) {
 			return 2;
-		}
-		else if (operator.equals("||")) {
+		} else if (operator.equals("||")) {
 			return 1;
 		}
-			
+
 		return 0;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+	/**
+	 * Reverses infix stack so beginning of expression is at top of the stack
+	 * 
+	 * @param infix: infix stack to be reversed.
+	 */
+	private void reverseInfixStack(Stack<String> infix) {
+		Stack<String> newInfix = new Stack<>();
+
+		while (!infix.isEmpty()) {
+			newInfix.push(infix.pop());
+		}
+		this.infix = newInfix;
+	}
+
+	/**
+	 * Converts an infix expression to postfix expression.
+	 * 
+	 * @param infixExp: infix expression to convert
+	 * @return: result postfix expression
+	 */
+	public String infixToPostfix(Stack<String> infix) {
+	    Stack<String> operatorStk = new Stack<>();
+	    StringBuilder postfix = new StringBuilder();
+
+	    while (!infix.isEmpty()) {
+	        String token = infix.pop();
+
+	        if (Character.isDigit(token.charAt(0))) {
+	            postfix.append(token).append(' ');
+	        } else if (token.equals("(")) {
+	            operatorStk.push(token);
+	        } else if (token.equals(")")) {
+	            while (!operatorStk.peek().equals("(")) {
+	                postfix.append(operatorStk.pop()).append(' ');
+	            }
+	            operatorStk.pop(); 
+	        } else {
+	            while (!operatorStk.isEmpty() && !operatorStk.peek().equals("(") && precedence(token) <= precedence(operatorStk.peek())) {
+	                postfix.append(operatorStk.pop()).append(' ');
+	            }
+	            operatorStk.push(token);
+	        }
+	    }
+
+	    while (!operatorStk.isEmpty()) {
+	        postfix.append(operatorStk.pop()).append(' ');
+	    }
+
+	    return postfix.toString();
+	}
+
 }
