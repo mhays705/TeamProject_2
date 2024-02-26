@@ -37,10 +37,10 @@ public class InfixExpression {
 
 		System.out.println("Expression read from input file:  " + infix.toString());
 		reverseInfixStack(infix);
-		System.out.println("Reversed infix " + infix.toString()); // Remove before submitting. Only for testing
+		System.out.println("Reversed infix:  " + infix.toString()); // Remove before submitting. Only for testing
 		this.postfix = infixToPostfix(infix);
-		System.out.println("Postfix expression " + this.postfix); // Remove before submitting. For Testing.
-		System.out.println("Result of expression: " +this.evaluate());
+		System.out.println("Postfix expression:  " + this.postfix); // Remove before submitting. For Testing.
+		System.out.println("Result of expression:  " + this.evaluate());
 	}
 
 	/**
