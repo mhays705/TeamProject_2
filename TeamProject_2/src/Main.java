@@ -1,18 +1,21 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 public class Main {
 
-	public static void main(String[] args) {
-		try {
-			InfixExpression infix = new InfixExpression("test.txt");
-			System.out.println(infix.evaluate());
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-
-	}
-
+    public static void main(String[] args) {
+    	InfixExpression infix;
+        try (BufferedReader reader = new BufferedReader(new FileReader("test.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+            	 infix = new InfixExpression(line);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File not found.");
+        } catch (IOException e) {
+            System.out.println("Error reading file.");
+        }
+    }
 }

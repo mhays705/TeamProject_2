@@ -1,75 +1,46 @@
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.Stack;
 
 public class InfixExpression {
 
-	private Stack<String> infix; // Stores infix expression as a stack of characters
+	private Stack<String> infix; // Stores infix expression as a stack of tokens
 	private String postfix; // Stores infix expression as postfix after conversion
 
 	// Constructor that parses file and creates an infix expression as a stack of
-	// characters
-	public InfixExpression(String file) throws IOException {
+	// characters and processes calculations
+	public InfixExpression(String line) {
 		infix = new Stack<>();
-		try {
-			FileReader reader = new FileReader(file);
-			StringBuilder number = new StringBuilder(); // Store digits of number
-			StringBuilder operator = new StringBuilder(); // Store comparison and logical operators
-			int currentChar;
-			while ((currentChar = reader.read()) != -1) { // Make sure stream isn't empty
-				char ch = (char) currentChar;
-				if (Character.isDigit(ch)) { // If character is digit append it to builder
-					number.append(ch);
-				}
-				if (ch == '<' || ch == '>' || ch == '&' || ch == '|' || ch == '!' || ch == '=') { // Check if character
-																									// is comparison
-					// or logical operator
-					char nextChar = (char) reader.read();
-					if (nextChar == '=') {
-						operator.append(ch).append(nextChar);
-						infix.push(operator.toString());
-						operator.setLength(0); // Reset operator string builder
-					} else if ((ch == '&' && nextChar == '&') || (ch == '|' && nextChar == '|')) { // If logical
-																									// operator append
-																									// it to builder and
-																									// push on to stack
-						operator.append(ch).append(nextChar);
-						infix.push(operator.toString());
-						operator.setLength(0); // Reset operator string builder
-					} else {
-						infix.push(String.valueOf(ch)); // Push single character operator
-					}
-				} else if (!Character.isWhitespace(ch)) {
-					char nextChar = (char) reader.read();
-					if (Character.isDigit(nextChar)) { // Check if multidigit number
-						number.append(nextChar);
-					}
-					if (number.length() > 0) {
-						infix.push(number.toString()); // Push accumulated digits to stack
-						number.setLength(0); // Reset StringBuilder
-					}
-					// Push the character onto the stack
-					else {
-						infix.push(String.valueOf(ch));
-					}
+		Scanner sc = new Scanner(line);
+		StringBuilder number = new StringBuilder(); // Store digits of number
+		StringBuilder operator = new StringBuilder(); // Store comparison and logical operators
 
-				}
-			}
+		while (sc.hasNext()) { // Check if there is another token in the input
+			String token = sc.next(); // Read the next token
+			char ch = token.charAt(0); // Get the first character of the token
 
-			// Push any remaining numbers on to the stack
-			if (number.length() > 0) {
+			if (Character.isDigit(ch)) { // If character is digit append it to builder
+				number.append(token);
 				infix.push(number.toString());
+				number.setLength(0); // Reset number builder
+			} else if (ch == '<' || ch == '>' || ch == '&' || ch == '|' || ch == '!' || ch == '=' || ch == '+' // Check for operator
+					|| ch == '-' || ch == '^' || ch == '*' || ch == '/') {
+				
+				if (token.length() > 1) { // If token has more than one character, it's a multi-character operator
+					infix.push(token); // Push the operator onto the stack
+				} else {
+					infix.push(token); // Push single character operator
+				}
 			}
-			reader.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("Error: File not found.");
 		}
+
+		sc.close(); // Close the scanner
+
+		System.out.println("Expression read from input file:  " + infix.toString());
 		reverseInfixStack(infix);
-		System.out.println(infix.toString()); // Remove before submitting. Only for testing
+		System.out.println("Reversed infix " + infix.toString()); // Remove before submitting. Only for testing
 		this.postfix = infixToPostfix(infix);
-		System.out.println(this.postfix); // Remove before submitting. For Testing.
+		System.out.println("Postfix expression " + this.postfix); // Remove before submitting. For Testing.
+		System.out.println("Result of expression: " +this.evaluate());
 	}
 
 	/**
