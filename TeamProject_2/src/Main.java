@@ -12,6 +12,7 @@ public class Main {
             while ((line = reader.readLine()) != null) {
             	 infix = new InfixExpression(line);
             }
+            reader.close();
         } catch (FileNotFoundException e) {
             System.out.println("Error: File not found.");
         } catch (IOException e) {
