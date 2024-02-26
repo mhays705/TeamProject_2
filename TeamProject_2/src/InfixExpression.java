@@ -12,7 +12,6 @@ public class InfixExpression {
 		infix = new Stack<>();
 		Scanner sc = new Scanner(line);
 		StringBuilder number = new StringBuilder(); // Store digits of number
-		StringBuilder operator = new StringBuilder(); // Store comparison and logical operators
 
 		while (sc.hasNext()) { // Check if there is another token in the input
 			String token = sc.next(); // Read the next token
