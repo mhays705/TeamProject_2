@@ -23,7 +23,7 @@ public class InfixExpression {
 				infix.push(number.toString());
 				number.setLength(0); // Reset number builder
 			} else if (ch == '<' || ch == '>' || ch == '&' || ch == '|' || ch == '!' || ch == '=' || ch == '+' // Check for operator
-					|| ch == '-' || ch == '^' || ch == '*' || ch == '/') {
+					|| ch == '-' || ch == '^' || ch == '*' || ch == '/' || ch == '%' || ch == '(' || ch == ')') {
 				
 				if (token.length() > 1) { // If token has more than one character, it's a multi-character operator
 					infix.push(token); // Push the operator onto the stack
@@ -155,6 +155,13 @@ public class InfixExpression {
 						throw new ArithmeticException("Dividing by zero");
 					}
 					stk.push(leftOperand / rightOperand);
+					break;
+				case "%":
+					if (rightOperand == 0) {
+						scanner.close();
+						throw new ArithmeticException("Dividing by zero");
+					}
+					stk.push(leftOperand % rightOperand);
 					break;
 				case "^":
 					stk.push((int) Math.pow(leftOperand, rightOperand));
