@@ -51,24 +51,33 @@ public class InfixExpression {
 	 * @return: Value representing level of precedence
 	 */
 	public int precedence(String operator) {
-		if (operator.equals("^")) {
-			return 7;
-		} else if (operator.equals("*") || operator.equals("/") || operator.equals("%")) {
-			return 6;
-		} else if (operator.equals("+") || operator.equals("-")) {
-			return 5;
-		} else if (operator.equals(">") || operator.equals(">=") || operator.equals("<") || operator.equals("<=")) {
-			return 4;
-		} else if (operator.equals("==") || operator.equals("!=")) {
-			return 3;
-		} else if (operator.equals("&&")) {
-			return 2;
-		} else if (operator.equals("||")) {
-			return 1;
-		}
-
-		return 0;
+	    switch (operator) {
+	        case "^":
+	            return 7;
+	        case "*":
+	        case "/":
+	        case "%":
+	            return 6;
+	        case "+":
+	        case "-":
+	            return 5;
+	        case ">":
+	        case ">=":
+	        case "<":
+	        case "<=":
+	            return 4;
+	        case "==":
+	        case "!=":
+	            return 3;
+	        case "&&":
+	            return 2;
+	        case "||":
+	            return 1;
+	        default:
+	            return 0;
+	    }
 	}
+
 
 	/**
 	 * Reverses infix stack so beginning of expression is at top of the stack
