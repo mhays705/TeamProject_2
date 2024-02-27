@@ -12,6 +12,7 @@ public class InfixExpression {
 		infix = new Stack<>();
 		Scanner sc = new Scanner(line);
 		StringBuilder number = new StringBuilder(); // Store digits of number
+		StringBuilder operator = new StringBuilder(); // Store comparison and logical operators
 
 		while (sc.hasNext()) { // Check if there is another token in the input
 			String token = sc.next(); // Read the next token
@@ -22,21 +23,25 @@ public class InfixExpression {
 				infix.push(number.toString());
 				number.setLength(0); // Reset number builder
 			} else if (ch == '<' || ch == '>' || ch == '&' || ch == '|' || ch == '!' || ch == '=' || ch == '+' // Check for operator
-					|| ch == '-' || ch == '^' || ch == '*' || ch == '/' || ch == '%' || ch == '(' || ch == ')') {
-				
+					|| ch == '-' || ch == '^' || ch == '*' || ch == '/' || ch == '%') {
+
 				if (token.length() > 1) { // If token has more than one character, it's a multi-character operator
 					infix.push(token); // Push the operator onto the stack
 				} else {
 					infix.push(token); // Push single character operator
 				}
 			}
+			
 		}
 
 		sc.close(); // Close the scanner
 
+		System.out.println("Expression read from input file:  " + infix.toString());
 		reverseInfixStack(infix);
+		System.out.println("Reversed infix " + infix.toString()); // Remove before submitting. Only for testing
 		this.postfix = infixToPostfix(infix);
-		System.out.println("Result of expression:  " + this.evaluate());
+		System.out.println("Postfix expression " + this.postfix); // Remove before submitting. For Testing.
+		System.out.println("Result of expression: " +this.evaluate());
 	}
 
 	/**
@@ -102,6 +107,10 @@ public class InfixExpression {
 				}
 				operatorStk.pop();
 			} else {
+				// Check for adjacent tokens without spaces
+	            if (!postfix.toString().isEmpty() && !Character.isDigit(postfix.charAt(postfix.length() - 1))) {
+	                postfix.append(' '); // Add a space if the previous token is not a digit
+	            }
 				while (!operatorStk.isEmpty() && !operatorStk.peek().equals("(")
 						&& precedence(token) <= precedence(operatorStk.peek())) {
 					postfix.append(operatorStk.pop()).append(' ');
@@ -116,6 +125,7 @@ public class InfixExpression {
 
 		return postfix.toString();
 	}
+	
 
 	/**
 	 * Evaluates a postfix expression using a stack.
@@ -132,62 +142,68 @@ public class InfixExpression {
 			String token = scanner.next();
 			if (Character.isDigit(token.charAt(0))) {
 				stk.push(Integer.valueOf(token));
-			} else {
-				int rightOperand = stk.pop(), leftOperand = stk.pop();
-				// Supported operators
-				switch (token) {
-				case "+":
-					stk.push(leftOperand + rightOperand);
-					break;
-				case "-":
-					stk.push(leftOperand - rightOperand);
-					break;
-				case "*":
-					stk.push(leftOperand * rightOperand);
-					break;
-				case "/":
-					if (rightOperand == 0) {
-						scanner.close();
-						throw new ArithmeticException("Dividing by zero");
+			} 
+			else if(token.equals("(")) {
+				stk.push(evaluate());
+			}
+			else if(token.equals(")")) {
+				throw new UnsupportedOperationException("Unexpected ')'");
+			}
+			else {
+				if (stk.size() >= 2) {
+					int rightOperand = stk.pop(), leftOperand = stk.pop();
+					// Supported operators
+					switch (token) {
+					case "+":
+						stk.push(leftOperand + rightOperand);
+						break;
+					case "-":
+						stk.push(leftOperand - rightOperand);
+						break;
+					case "*":
+						stk.push(leftOperand * rightOperand);
+						break;
+					case "%":
+						stk.push(leftOperand % rightOperand);
+						break;
+					case "/":
+						if (rightOperand == 0) {
+							scanner.close();
+							throw new ArithmeticException("Dividing by zero");
+						}
+						stk.push(leftOperand / rightOperand);
+						break;
+					case "^":
+						stk.push((int) Math.pow(leftOperand, rightOperand));
+						break;
+					case ">":
+						stk.push(leftOperand > rightOperand ? 1 : 0);
+						break;
+					case ">=":
+						stk.push(leftOperand >= rightOperand ? 1 : 0);
+						break;
+					case "<":
+						stk.push(leftOperand < rightOperand ? 1 : 0);
+						break;
+					case "<=":
+						stk.push(leftOperand <= rightOperand ? 1 : 0);
+						break;
+					case "==":
+						stk.push(leftOperand == rightOperand ? 1 : 0);
+						break;
+					case "!=":
+						stk.push(leftOperand != rightOperand ? 1 : 0);
+						break;
+					case "&&":
+						stk.push((leftOperand != 0 && rightOperand != 0) ? 1 : 0);
+						break;
+					case "||":
+						stk.push((leftOperand != 0 || rightOperand != 0) ? 1 : 0);
+						break;
+
+					default:
+						throw new UnsupportedOperationException("Operator not supported: " + token);
 					}
-					stk.push(leftOperand / rightOperand);
-					break;
-				case "%":
-					if (rightOperand == 0) {
-						scanner.close();
-						throw new ArithmeticException("Dividing by zero");
-					}
-					stk.push(leftOperand % rightOperand);
-					break;
-				case "^":
-					stk.push((int) Math.pow(leftOperand, rightOperand));
-					break;
-				case ">":
-					stk.push(leftOperand > rightOperand ? 1 : 0);
-					break;
-				case ">=":
-					stk.push(leftOperand >= rightOperand ? 1 : 0);
-					break;
-				case "<":
-					stk.push(leftOperand < rightOperand ? 1 : 0);
-					break;
-				case "<=":
-					stk.push(leftOperand <= rightOperand ? 1 : 0);
-					break;
-				case "==":
-					stk.push(leftOperand == rightOperand ? 1 : 0);
-					break;
-				case "!=":
-					stk.push(leftOperand != rightOperand ? 1 : 0);
-					break;
-				case "&&":
-					stk.push((leftOperand != 0 && rightOperand != 0) ? 1 : 0);
-					break;
-				case "||":
-					stk.push((leftOperand != 0 || rightOperand != 0) ? 1 : 0);
-					break;
-				default:
-					throw new UnsupportedOperationException("Operator not supported: " + token);
 				}
 			}
 		}
