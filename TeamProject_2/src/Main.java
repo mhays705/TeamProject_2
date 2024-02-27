@@ -10,9 +10,20 @@ public class Main {
         try (BufferedReader reader = new BufferedReader(new FileReader("test.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-            	 infix = new InfixExpression(line);
+            	line = line.replaceAll("\\s", ""); //remove whitespace
+            	
+            	//add correct spacing
+            	line = line.replaceAll("([+\\-*/^%><])", " $1 ");
+            	line = line.replaceAll("([()])", " $1 ");
+            	line = line.replaceAll("&&",  " && ");
+            	line = line.replaceAll("\\|\\|",  " \\|\\| ");
+            	line = line.replaceAll(">=",  " >= ");
+            	line = line.replaceAll("<=",  " <= ");
+            	line = line.replaceAll("==",  " == ");
+            	line = line.replaceAll("!=",  " != ");
+            	
+            	infix = new InfixExpression(line);
             }
-            reader.close();
         } catch (FileNotFoundException e) {
             System.out.println("Error: File not found.");
         } catch (IOException e) {
